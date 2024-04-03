@@ -1,0 +1,15 @@
+name: Apply Kubernetes Resource
+description: Apply Kubernetes Resource
+inputs:
+  namespace:
+    description: "Kubernetes Namespace"
+    required: true
+  filename:
+    description: "Kubernetes Resource Filename"
+    required: true
+runs:
+  using: composite
+  steps:
+    - run: |
+        kubectl apply -f ${{ inputs.filename }} -n ${{ inputs.namespace }}
+      shell: bash
