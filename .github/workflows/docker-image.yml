@@ -17,7 +17,7 @@ jobs:
     #- name: Build the Docker image
     #  run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
     - name: Apply Secret
-      uses: antonio-pinheiro-wtc/teste/.github/actions/apply.yml@main
+      uses: ./.github/actions/apply.yml@main
       with:
         namespace: academy
         filename: kubernetes/secret.yaml
