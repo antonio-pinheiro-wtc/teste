@@ -19,7 +19,7 @@ jobs:
     - name: Docker Build
       uses: antonio-pinheiro-wtc/teste/.github/actions/docker_build@main
       with:
-        path_dockerfile: .
+        path_dockerfile: Dockerfile
         image_name: academy
 
     - name: Apply Secret
