@@ -14,5 +14,6 @@ runs:
   using: composite
   steps:
     - run: |
-        docker build . --file ${{ inputs.path_dockerfile }} --tag ${{ inputs.image_name }}:${{ inputs.tag_name:-$(date +%s) }}
+        TAG=${{ inputs.tag_name:-$(date +%s) }}
+        docker build . --file ${{ inputs.path_dockerfile }} --tag ${{ inputs.image_name }}:$TAG
       shell: bash
