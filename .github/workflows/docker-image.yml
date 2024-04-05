@@ -45,7 +45,7 @@ jobs:
       with:
         path_dockerfile: Dockerfile
         image_name: academy
-
+        tag_name: latest
     - name: Apply Secret
       uses: antonio-pinheiro-wtc/teste/.github/actions/apply@main
       with:
