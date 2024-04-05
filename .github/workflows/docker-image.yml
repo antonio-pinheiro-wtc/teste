@@ -50,7 +50,7 @@ jobs:
 #        path_dockerfile: Dockerfile
 #        image_name: academy
     - name: Run Quarkus Tests
-      run:  mvn -Dquarkus.profile=local -Dquarkus.devservices.enabled=false test
+      run:  mvn -Dquarkus.profile=local -Dquarkus.devservices.enabled=false -Dquarkus.kubernetes-config.enabled=false  test
 
     - name: Apply Secret
       uses: antonio-pinheiro-wtc/teste/.github/actions/apply@main
