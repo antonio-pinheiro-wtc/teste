@@ -45,7 +45,7 @@ jobs:
 #        path_dockerfile: Dockerfile
 #        image_name: academy
     - name: Run Quarkus Tests
-      run: psql -h postgres -U academy -d postgres
+      run:  mvn -Dquarkus.profile=local
 
     - name: Apply Secret
       uses: antonio-pinheiro-wtc/teste/.github/actions/apply@main

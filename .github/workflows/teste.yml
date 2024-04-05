@@ -1,0 +1,17 @@
+name: teste
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  teste:
+    runs-on: ubuntu-latest
+
+
+    steps:
+      - run: env
