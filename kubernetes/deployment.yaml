@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: test-hibernate-with-clean:configmap
+          image: %IMAGE_PLACEHOLDER%
           imagePullPolicy: Never
           ports:
             - containerPort: 8080

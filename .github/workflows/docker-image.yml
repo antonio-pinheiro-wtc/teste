@@ -46,6 +46,12 @@ jobs:
     - name: Run Quarkus Tests
       run:  mvn test
 
+    - run: DOCKER_IMAGE_NAME="academy:1712324592"
+    - name: Apply Deployment
+      run: |
+        sed -i'' -e "s/%IMAGE_PLACEHOLDER%/$DOCKER_IMAGE_NAME/g" kubernetes/deployment.yaml
+        kubectl apply -f kubernetes/deployment.yaml -n academy
+
     - name: Apply Secret
       uses: antonio-pinheiro-wtc/teste/.github/actions/apply@main
       with:
