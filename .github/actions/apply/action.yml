@@ -8,6 +8,7 @@ inputs:
     description: "Kubernetes Resource Filename"
     required: true
 runs:
+  using: composite
   steps:
     - run: |
         kubectl apply -f ${{ inputs.filename }} -n ${{ inputs.namespace }}
