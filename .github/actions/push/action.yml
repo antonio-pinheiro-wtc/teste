@@ -1,5 +1,8 @@
 name: Docker Tag and Push Image
 inputs:
+  username:
+    description: "Docker Hub Username"
+    required: true
   image_name:
     description: "Name of the Docker image"
     required: true
@@ -8,4 +11,4 @@ runs:
   using: composite
   steps:
     - shell: bash
-      run: docker tag ${{ inputs.image_name }} ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.image_name }}
+      run: docker tag ${{ inputs.image_name }} ${{ inputs.username }}/${{ inputs.image_name }}
