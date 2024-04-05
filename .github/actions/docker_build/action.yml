@@ -1,0 +1,15 @@
+name: Docker Build
+description: Build Docker Image
+inputs:
+  path_dockerfile:
+    description: "Path to Dockerfile, if not in root directory"
+    required: false
+  image_name:
+    description: "Name of the Docker image"
+    required: false
+runs:
+  using:
+  steps:
+    - run: |
+        docker build . --file ${{ inputs.path_dockerfile }} --tag ${{ inputs.image_name }}:$(date +%s)
+      shell: bash

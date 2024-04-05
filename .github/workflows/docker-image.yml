@@ -1,7 +1,5 @@
 name: Docker Image CI
 
-
-
 on:
   workflow_dispatch: {}
   push:
@@ -17,8 +15,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    #- name: Build the Docker image
-    #  run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+
+    - name: Docker Build
+      uses: antonio-pinheiro-wtc/teste/.github/actions/docker_build@main
+      with:
+        path_dockerfile: .
+        image_name: academy
+
     - name: Apply Secret
       uses: antonio-pinheiro-wtc/teste/.github/actions/apply@main
       with:
