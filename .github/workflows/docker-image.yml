@@ -36,6 +36,7 @@ jobs:
         echo "id: ${{ job.services.postgres.id }}"
         echo "network: ${{ job.services.postgres.network }}"
         echo "ports: ${{ job.services.postgres.ports }}"
+        docker ps
       
 
 #    - name: Docker Build
