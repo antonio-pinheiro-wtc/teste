@@ -8,7 +8,7 @@ inputs:
     description: "Name of the Docker image"
     required: false
 runs:
-  using: docker
+  using: composite
   steps:
     - run: |
         docker build . --file ${{ inputs.path_dockerfile }} --tag ${{ inputs.image_name }}:$(date +%s)
