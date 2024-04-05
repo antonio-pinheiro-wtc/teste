@@ -21,10 +21,22 @@ jobs:
           POSTGRES_DB: postgres
         ports:
           - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+   
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Echo the Postgres service ID / Network / Ports
+      run: |
+        echo "id: ${{ job.services.postgres.id }}"
+        echo "network: ${{ job.services.postgres.network }}"
+        echo "ports: ${{ job.services.postgres.ports }}"
+      
 
 #    - name: Docker Build
 #      uses: antonio-pinheiro-wtc/teste/.github/actions/docker_build@main
