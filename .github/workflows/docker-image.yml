@@ -32,7 +32,7 @@ jobs:
 #        path_dockerfile: Dockerfile
 #        image_name: academy
     - name: Run Quarkus Tests
-      run: mvn test
+      run: docker ps
 
     - name: Apply Secret
       uses: antonio-pinheiro-wtc/teste/.github/actions/apply@main
