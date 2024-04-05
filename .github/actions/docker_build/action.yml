@@ -21,5 +21,9 @@ runs:
         fi
       shell: bash
     - run: |
-        docker build . --file ${{ inputs.path_dockerfile }} --tag ${{ inputs.image_name }}:$TAG
+        NAME=${{ inputs.image_name }}:$TAG
+        echo $NAME
+        docker build . --file ${{ inputs.path_dockerfile }} --tag $NAME
+        env.DOCKER_IMAGE_NAME=$NAME
+        env
       shell: bash
