@@ -27,4 +27,5 @@ public class FruitEntity extends PanacheEntity {
     public void setName(String name) {
         this.name = name;
     }
+
 }
