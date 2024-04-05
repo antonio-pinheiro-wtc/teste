@@ -32,7 +32,7 @@ jobs:
 #        path_dockerfile: Dockerfile
 #        image_name: academy
     - name: Run Quarkus Tests
-      run: docker ps
+      run: psql -h postgres -U academy -d postgres
 
     - name: Apply Secret
       uses: antonio-pinheiro-wtc/teste/.github/actions/apply@main
