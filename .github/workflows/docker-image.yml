@@ -37,11 +37,11 @@ jobs:
         distribution: 'corretto' # See 'Supported distributions' for available options
         java-version: '17'
 
-#    - name: Docker Build
-#      uses: antonio-pinheiro-wtc/teste/.github/actions/docker_build@main
-#      with:
-#        path_dockerfile: Dockerfile
-#        image_name: academy
+    - name: Docker Build
+      uses: antonio-pinheiro-wtc/teste/.github/actions/docker_build@main
+      with:
+        path_dockerfile: Dockerfile
+        image_name: academy
 
     - name: Login to Docker Hub
       uses: docker/login-action@v3.1.0
@@ -49,11 +49,11 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-#    - name: Docker Push
-#      uses: antonio-pinheiro-wtc/teste/.github/actions/push@main
-#      with:
-#        username: ${{ secrets.DOCKERHUB_USERNAME }}
-#        image_name: ${{ env.DOCKER_IMAGE_NAME }}
+    - name: Docker Push
+      uses: antonio-pinheiro-wtc/teste/.github/actions/push@main
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        image_name: ${{ env.DOCKER_IMAGE_NAME }}
 
     - name: Create PostgreSQL container
       if: ${{ env.ACT }}
@@ -78,8 +78,6 @@ jobs:
         database_username: ${{ secrets.DATABASE_USERNAME }}
         database_password: ${{ secrets.DATABASE_PASSWORD }}
       run: |
-        DOCKER_IMAGE_NAME=academy:1712349130
-        
         database_username_base64=$(echo -n "$database_username" | base64)
         database_password_base64=$(echo -n "$database_password" | base64)
         
@@ -89,22 +87,11 @@ jobs:
         sed -i'' -e "s/%IMAGE_PLACEHOLDER%/$DOCKER_IMAGE_NAME/g" kubernetes/deployment.yaml
         sed -i'' -e "s/%DATABASE_USERNAME%/$database_username_base64/g" kubernetes/secret.yaml
         sed -i'' -e "s/%DATABASE_PASSWORD%/$database_password_base64/g" kubernetes/secret.yaml
-        
+
+    - name: Apply Deployment of PostgreSQL and the App
+      description: Apply the deployment of the PostgreSQL and then the App making sure the PostgreSQL is up and running before the App
+      if: ${{ env.ACT }}
+      run: |
         kubectl apply -f kubernetes-postgres -n academy
-        
-        kubectl wait --for=condition=available deployment/postgres --timeout=60s -n academy
-        
+        kubectl wait --for=condition=available deployment/postgres --timeout=60s -n academy  
         kubectl apply -f kubernetes -n academy
-
-#    - name: Apply Deployment
-#      if: ${{ env.ACT }}
-#      run: |
-#        sed -i'' -e "s/%IMAGE_PLACEHOLDER%/$DOCKER_IMAGE_NAME/g" kubernetes/deployment.yaml
-#        kubectl apply -f kubernetes/deployment.yaml -n academy
-
-#    - name: Apply Secret
-#      if: ${{ env.ACT }}
-#      uses: antonio-pinheiro-wtc/teste/.github/actions/apply@main
-#      with:
-#       namespace: academy
-#        filename: kubernetes/secret.yaml
