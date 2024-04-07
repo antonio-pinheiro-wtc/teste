@@ -41,7 +41,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - run: echo "${{ toJSON(github.event.inputs) }}"
+    - run: echo "${{ github.event.inputs.UpperCaseForce }}"
 
     - uses: actions/setup-java@v4
       if: ${{ !env.ACT }}
