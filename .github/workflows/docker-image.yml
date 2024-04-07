@@ -91,6 +91,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    environment: deploy
     steps:
     - name: Apply Deployment of PostgreSQL and the Application
       if: ${{ env.ACT }}
