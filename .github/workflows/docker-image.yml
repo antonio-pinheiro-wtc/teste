@@ -56,6 +56,7 @@ jobs:
 #        image_name: ${{ env.DOCKER_IMAGE_NAME }}
 
     - name: Create PostgreSQL container
+      if: ${{ env.ACT }}
       uses: antonio-pinheiro-wtc/teste/.github/actions/postgres-container@main
       with:
         name: actions-postgres
@@ -91,8 +92,7 @@ jobs:
         
         kubectl apply -f kubernetes-postgres -n academy
         
-        kubectl wait --for=condition=available deployment/postgres --timeout 180 -n academy
-        
+        kubectl wait --for=condition=available deployment/postgres --timeout=60s -n academy
         
         kubectl apply -f kubernetes -n academy
 

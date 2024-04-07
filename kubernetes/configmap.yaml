@@ -4,4 +4,4 @@ metadata:
   name: academy-configmap
 data:
   fruit.name.uppercase.force: "false"
-  quarkus.datasource.jdbc.url: "jdbc:postgresql://localhost:5432/postgres"
+  quarkus.datasource.jdbc.url: "jdbc:postgresql://postgres-service:5432/postgres"
