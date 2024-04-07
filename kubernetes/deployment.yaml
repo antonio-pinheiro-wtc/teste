@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: %IMAGE_PLACEHOLDER%
+          image: %REPOSITORY_PLACEHOLDER%/%IMAGE_PLACEHOLDER%
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080

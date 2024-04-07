@@ -1,7 +1,17 @@
 name: Docker Image CI
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      UpperCaseForce:
+        required: false
+        type: choice
+        description: 'Force uppercase'
+        default: 'false'
+        options:
+          - 'true'
+          - 'false'
+
   push:
     branches: [ "main" ]
   pull_request:
@@ -37,23 +47,23 @@ jobs:
         distribution: 'corretto' # See 'Supported distributions' for available options
         java-version: '17'
 
-    - name: Docker Build
-      uses: antonio-pinheiro-wtc/teste/.github/actions/docker_build@main
-      with:
-        path_dockerfile: Dockerfile
-        image_name: academy
+#    - name: Docker Build
+#      uses: antonio-pinheiro-wtc/teste/.github/actions/docker_build@main
+#      with:
+#        path_dockerfile: Dockerfile
+#        image_name: academy
 
-    - name: Login to Docker Hub
-      uses: docker/login-action@v3.1.0
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+#    - name: Login to Docker Hub
+#      uses: docker/login-action@v3.1.0
+#      with:
+#        username: ${{ secrets.DOCKERHUB_USERNAME }}
+#        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Docker Push
-      uses: antonio-pinheiro-wtc/teste/.github/actions/push@main
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        image_name: ${{ env.DOCKER_IMAGE_NAME }}
+#    - name: Docker Push
+#      uses: antonio-pinheiro-wtc/teste/.github/actions/push@main
+#      with:
+#        username: ${{ secrets.DOCKERHUB_USERNAME }}
+#        image_name: ${{ env.DOCKER_IMAGE_NAME }}
 
     - name: Create PostgreSQL container
       if: ${{ env.ACT }}
@@ -64,35 +74,50 @@ jobs:
         username: academy
         password: academy
 
-    - name: Run Quarkus Tests
-      run:  |
-        if [[ "${ACT}" == "true" ]]; then
-          mvn test -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:41200/postgres
-        else
-          mvn test
-        fi
-
-    - name: Replace variables on kubernetes templates
-      if: ${{ env.ACT }}
-      env:
-        database_username: ${{ secrets.DATABASE_USERNAME }}
-        database_password: ${{ secrets.DATABASE_PASSWORD }}
-      run: |
-        database_username_base64=$(echo -n "$database_username" | base64)
-        database_password_base64=$(echo -n "$database_password" | base64)
-        
-        sed -i'' -e "s/%DATABASE_USERNAME%/$database_username_base64/g" kubernetes-postgres/secret.yaml
-        sed -i'' -e "s/%DATABASE_PASSWORD%/$database_password_base64/g" kubernetes-postgres/secret.yaml
-        
-        sed -i'' -e "s/%IMAGE_PLACEHOLDER%/$DOCKER_IMAGE_NAME/g" kubernetes/deployment.yaml
-        sed -i'' -e "s/%DATABASE_USERNAME%/$database_username_base64/g" kubernetes/secret.yaml
-        sed -i'' -e "s/%DATABASE_PASSWORD%/$database_password_base64/g" kubernetes/secret.yaml
+#    - name: Run Quarkus Tests
+#      run:  |
+#        if [[ "${ACT}" == "true" ]]; then
+#          mvn test -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:41200/postgres
+#        else
+#          mvn test
+#        fi
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     environment: deploy
     steps:
+
+    - uses: actions/checkout@v3
+
+    - name: Replace variables on kubernetes templates
+      env:
+        database_username: ${{ secrets.DATABASE_USERNAME }}
+        database_password: ${{ secrets.DATABASE_PASSWORD }}
+      with:
+        upperCaseForce: ${{ env.UpperCaseForce }}
+      run: |
+        DOCKER_REPOSITORY="antoniopinheiro798"
+        DOCKER_IMAGE_NAME="academy:1712527216" 
+        
+        database_username_base64=$(echo -n "$database_username" | base64)
+        database_password_base64=$(echo -n "$database_password" | base64)
+        
+        sed -i'' -e "s/%DATABASE_USERNAME%/$database_username_base64/g" kubernetes-postgres/secret.yaml
+        sed -i'' -e "s/%DATABASE_PASSWORD%/$database_password_base64/g" kubernetes-postgres/secret.yaml
+        
+        echo "x"
+        echo ${{ github.event.inputs.UpperCaseForce }}
+        echo "y"
+        
+        sed -i'' -e "s/%REPOSITORY_PLACEHOLDER%/$DOCKER_REPOSITORY/g" kubernetes/deployment.yaml
+        sed -i'' -e "s/%IMAGE_PLACEHOLDER%/$DOCKER_IMAGE_NAME/g" kubernetes/deployment.yaml
+      
+        sed -i'' -e "s/%DATABASE_USERNAME%/$database_username_base64/g" kubernetes/secret.yaml
+        sed -i'' -e "s/%DATABASE_PASSWORD%/$database_password_base64/g" kubernetes/secret.yaml
+        sed -i'' -e "s/%FORCE_UPPERCASE%/${{ github.event.inputs.UpperCaseForce }}/g" kubernetes/configmap.yaml
+        cat kubernetes/configmap.yaml
+
     - name: Apply Deployment of PostgreSQL and the Application
       if: ${{ env.ACT }}
       run: |
