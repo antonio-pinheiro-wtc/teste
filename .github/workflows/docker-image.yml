@@ -37,19 +37,11 @@ jobs:
         distribution: 'corretto' # See 'Supported distributions' for available options
         java-version: '17'
 
-    - name: Cache local Maven repository
-      uses: actions/cache@v4
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
-
-    - name: Docker Build
-      uses: antonio-pinheiro-wtc/teste/.github/actions/docker_build@main
-      with:
-        path_dockerfile: Dockerfile
-        image_name: academy
+#    - name: Docker Build
+#      uses: antonio-pinheiro-wtc/teste/.github/actions/docker_build@main
+#      with:
+#        path_dockerfile: Dockerfile
+#        image_name: academy
 
     - name: Login to Docker Hub
       uses: docker/login-action@v3.1.0
@@ -57,24 +49,51 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Docker Push
-      uses: antonio-pinheiro-wtc/teste/.github/actions/push@main
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        image_name: ${{ env.DOCKER_IMAGE_NAME }}
+#    - name: Docker Push
+#      uses: antonio-pinheiro-wtc/teste/.github/actions/push@main
+#      with:
+#        username: ${{ secrets.DOCKERHUB_USERNAME }}
+#        image_name: ${{ env.DOCKER_IMAGE_NAME }}
 
     - name: Run Quarkus Tests
-      run:  mvn test
+      run:  |
+        docker ps
+        mvn test -Dquarkus.datasource.jdbc.url=jdbc:postgresql://postgres:5432/postgres
 
-    - name: Apply Deployment
+    - name: Replace variables on kubernetes templates
       if: ${{ env.ACT }}
+      env:
+        database_username: ${{ secrets.DATABASE_USERNAME }}
+        database_password: ${{ secrets.DATABASE_PASSWORD }}
       run: |
+        DOCKER_IMAGE_NAME=academy:1712349130
+        
+        database_username_base64=$(echo -n "$database_username" | base64)
+        database_password_base64=$(echo -n "$database_password" | base64)
+        
+        sed -i'' -e "s/%DATABASE_USERNAME%/$database_username_base64/g" kubernetes-postgres/secret.yaml
+        sed -i'' -e "s/%DATABASE_PASSWORD%/$database_password_base64/g" kubernetes-postgres/secret.yaml
+        
         sed -i'' -e "s/%IMAGE_PLACEHOLDER%/$DOCKER_IMAGE_NAME/g" kubernetes/deployment.yaml
-        kubectl apply -f kubernetes/deployment.yaml -n academy
+        sed -i'' -e "s/%DATABASE_USERNAME%/$database_username_base64/g" kubernetes/secret.yaml
+        sed -i'' -e "s/%DATABASE_PASSWORD%/$database_password_base64/g" kubernetes/secret.yaml
+        
+        kubectl apply -f kubernetes-postgres -n academy
+        
+        kubectl wait --for=condition=available deployment/postgres --timeout 180 -n academy
+        
+        
+        kubectl apply -f kubernetes -n academy
 
-    - name: Apply Secret
-      if: ${{ env.ACT }}
-      uses: antonio-pinheiro-wtc/teste/.github/actions/apply@main
-      with:
-        namespace: academy
-        filename: kubernetes/secret.yaml
+#    - name: Apply Deployment
+#      if: ${{ env.ACT }}
+#      run: |
+#        sed -i'' -e "s/%IMAGE_PLACEHOLDER%/$DOCKER_IMAGE_NAME/g" kubernetes/deployment.yaml
+#        kubectl apply -f kubernetes/deployment.yaml -n academy
+
+#    - name: Apply Secret
+#      if: ${{ env.ACT }}
+#      uses: antonio-pinheiro-wtc/teste/.github/actions/apply@main
+#      with:
+#       namespace: academy
+#        filename: kubernetes/secret.yaml
