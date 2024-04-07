@@ -92,7 +92,6 @@ jobs:
     - name: Replace varaibles on kubernetes templates
       with:
         UpperCaseForce: ${{ github.event.inputs.UpperCaseForce }}
-      env:
         database_username: ${{ secrets.DATABASE_USERNAME }}
         database_password: ${{ secrets.DATABASE_PASSWORD }}
       run: |
