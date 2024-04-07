@@ -96,8 +96,9 @@ jobs:
         database_username: ${{ secrets.DATABASE_USERNAME }}
         database_password: ${{ secrets.DATABASE_PASSWORD }}
       run: |
-        DOCKER_REPOSITORY="antoniopinheiro798"
-        DOCKER_IMAGE_NAME="academy:1712527216"
+        kubectl apply -f kubernetes-postgres -n academy
+        kubectl wait --for=condition=available deployment/postgres --timeout=60s -n academy  
+        kubectl apply -f kubernetes -n academy
     - name: Apply Deployment of PostgreSQL and the Application
       if: ${{ env.ACT }}
       run: |
