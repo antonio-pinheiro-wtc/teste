@@ -58,7 +58,7 @@ jobs:
     - name: Run Quarkus Tests
       run:  |
         docker ps
-        mvn test -Dquarkus.datasource.jdbc.url=jdbc:postgresql://postgres:5432/postgres
+        mvn test
 
     - name: Replace variables on kubernetes templates
       if: ${{ env.ACT }}
