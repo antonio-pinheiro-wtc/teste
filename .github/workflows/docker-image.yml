@@ -97,25 +97,7 @@ jobs:
         database_password: ${{ secrets.DATABASE_PASSWORD }}
       run: |
         DOCKER_REPOSITORY="antoniopinheiro798"
-        DOCKER_IMAGE_NAME="academy:1712527216" 
-        
-        database_username_base64=$(echo -n "$database_username" | base64)
-        database_password_base64=$(echo -n "$database_password" | base64)
-        
-        sed -i'' -e "s/%DATABASE_USERNAME%/$database_username_base64/g" kubernetes-postgres/secret.yaml
-        sed -i'' -e "s/%DATABASE_PASSWORD%/$database_password_base64/g" kubernetes-postgres/secret.yaml
-        
-        echo "x"
-        echo ${{ github.event.inputs.UpperCaseForce }}
-        echo "y"
-        
-        sed -i'' -e "s/%REPOSITORY_PLACEHOLDER%/$DOCKER_REPOSITORY/g" kubernetes/deployment.yaml
-        sed -i'' -e "s/%IMAGE_PLACEHOLDER%/$DOCKER_IMAGE_NAME/g" kubernetes/deployment.yaml
-        
-        sed -i'' -e "s/%DATABASE_USERNAME%/$database_username_base64/g" kubernetes/secret.yaml
-        sed -i'' -e "s/%DATABASE_PASSWORD%/$database_password_base64/g" kubernetes/secret.yaml
-        sed -i'' -e "s/%FORCE_UPPERCASE%/${{ github.event.inputs.UpperCaseForce }}/g" kubernetes/configmap.yaml
-        cat kubernetes/configmap.yaml
+        DOCKER_IMAGE_NAME="academy:1712527216"
     - name: Apply Deployment of PostgreSQL and the Application
       if: ${{ env.ACT }}
       run: |
