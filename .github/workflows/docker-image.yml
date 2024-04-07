@@ -88,6 +88,20 @@ jobs:
         sed -i'' -e "s/%DATABASE_USERNAME%/$database_username_base64/g" kubernetes/secret.yaml
         sed -i'' -e "s/%DATABASE_PASSWORD%/$database_password_base64/g" kubernetes/secret.yaml
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Request deployment approval
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.issues.create({
+            owner: github.repository_owner,
+            repo: github.repository,
+            title: 'Requesting deployment approval',
+            body: 'This workflow automatically built a new version of your application. Please review the changes and approve deployment to Kubernetes.'
+          })
     - name: Apply Deployment of PostgreSQL and the Application
       if: ${{ env.ACT }}
       run: |
