@@ -89,7 +89,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Replace varaibles on kubernetes templates
+    - name: Replace variables on kubernetes templates
       env:
         upper_case_force: ${{ github.event.inputs.UpperCaseForce }}
         database_username: ${{ secrets.DATABASE_USERNAME }}
@@ -111,6 +111,7 @@ jobs:
         sed -i'' -e "s/%DATABASE_PASSWORD%/$database_password_base64/g" kubernetes/secret.yaml
         sed -i'' -e "s/%FORCE_UPPERCASE%/$upper_case_force/g" kubernetes/configmap.yaml
         cat kubernetes/configmap.yaml
+        env
     - name: Apply Deployment of PostgreSQL and the Application
       if: ${{ env.ACT }}
       run: |
