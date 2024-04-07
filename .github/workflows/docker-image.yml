@@ -55,10 +55,21 @@ jobs:
 #        username: ${{ secrets.DOCKERHUB_USERNAME }}
 #        image_name: ${{ env.DOCKER_IMAGE_NAME }}
 
+    - name: Create PostgreSQL container
+      uses: antonio-pinheiro-wtc/teste/.github/actions/postgres-container@main
+      with:
+        name: actions-postgres
+        port: 41200
+        username: academy
+        password: academy
+
     - name: Run Quarkus Tests
       run:  |
-        docker ps
-        mvn test
+        if [[ "${ACT}" == "true" ]]; then
+          mvn test -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:41200/postgres
+        else
+          mvn test
+        fi
 
     - name: Replace variables on kubernetes templates
       if: ${{ env.ACT }}
