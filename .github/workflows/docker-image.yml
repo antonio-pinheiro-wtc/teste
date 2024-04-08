@@ -56,7 +56,6 @@ jobs:
       id: docker_build
       uses: antonio-pinheiro-wtc/teste/.github/actions/docker_build@main
       with:
-        path_dockerfile: Dockerfile
         image_name: academy
 
     - name: Login to Docker Hub
