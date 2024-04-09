@@ -5,12 +5,8 @@ on:
     inputs:
       UpperCaseForce:
         required: false
-        type: choice
+        type: boolean
         description: 'Force uppercase'
-        default: 'false'
-        options:
-          - 'true'
-          - 'false'
 
   push:
     branches: [ "main" ]
@@ -43,8 +39,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-
-    - run: echo "${{ toJSON(github.event.inputs) }}"
 
     - uses: actions/setup-java@v4
       if: ${{ !env.ACT }}
@@ -86,6 +80,7 @@ jobs:
         else
           mvn test
         fi
+      shell: bash
 
   deploy:
     needs: build
@@ -118,6 +113,7 @@ jobs:
         sed -i'' -e "s/%DATABASE_USERNAME%/$database_username_base64/g" kubernetes/secret.yaml
         sed -i'' -e "s/%DATABASE_PASSWORD%/$database_password_base64/g" kubernetes/secret.yaml
         sed -i'' -e "s/%FORCE_UPPERCASE%/$upper_case_force/g" kubernetes/configmap.yaml
+      shell: bash
 
     - name: Apply Deployment of PostgreSQL and the Application
       if: ${{ env.ACT }}
